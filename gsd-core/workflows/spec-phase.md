@@ -450,6 +450,12 @@ Use the SPEC.md template from @~/.claude/gsd-core/templates/spec.md.
 
 **If any dimensions are below minimum**, mark them in the Ambiguity Report with: `⚠ Below minimum — planner must treat as assumption`.
 
+**Optional sections (do NOT affect the gate):** Fill these only from what the interview and codebase scout actually surfaced — never invent content. Delete any section (heading included) that would be empty:
+- **Assumptions** — facts held true without re-verification (surfaced mainly by the Researcher/Failure Analyst perspectives).
+- **Architecture Impact** — shared modules the phase touches, from the codebase scout in Step 2.
+- **Required Reading** — docs/ADRs/prior SUMMARY.md a fresh session must read first.
+- **Open Questions** — unresolved items raised during the interview. These must NOT gate a locked requirement; if one is decided during the interview, promote it into Requirements instead of leaving it here.
+
 Write to: `{phase_dir}/{padded_phase}-SPEC.md`
 
 ## Step 7: Commit
@@ -488,6 +494,7 @@ Next: /gsd:discuss-phase {X}
 - Max 2–3 questions per round — do not frontload all questions at once
 - Step 5.5 edge probe runs after the ambiguity gate; dismissals require a reason; --auto never auto-dismisses
 - Step 5.6 prohibition probe runs after the edge probe; dismissals require a reason; --auto never auto-dismisses a prohibition
+- Optional sections (Assumptions, Architecture Impact, Required Reading, Open Questions) NEVER affect the ambiguity score or gate — include only when they carry real content, otherwise delete the whole section
 </critical_rules>
 
 <success_criteria>

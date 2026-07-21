@@ -59,6 +59,32 @@ Template for `.planning/phases/XX-name/{phase_num}-SPEC.md` — locks requiremen
 [Performance, compatibility, data volume, dependency, or platform constraints.
 If none: "No additional constraints beyond standard project conventions."]
 
+## Assumptions
+
+*(Optional — delete this whole section if there are none.)*
+
+Facts held true for this phase without re-verification. If any turns out false, the requirements above may need revisiting.
+
+- [Assumption — e.g. "The external API is reachable from the runtime host."]
+- [Assumption — e.g. "The database supports transactions."]
+
+## Architecture Impact
+
+*(Optional — delete this whole section if the phase touches no shared modules.)*
+
+**Affected modules:**
+- `[module.path]` — [what changes: new code / signature change / ownership move]
+- `[module.path]` — [what changes]
+
+## Required Reading
+
+*(Optional — delete this whole section if no prior context is needed.)*
+
+Documents a fresh AI session or new contributor must read before working on this phase.
+
+- `[path/to/doc]` — [why it matters]
+- `[ADR-XXXX]` — [why it matters]
+
 ## Acceptance Criteria
 
 - [ ] [Pass/fail criterion — unambiguous, verifiable]
@@ -93,6 +119,12 @@ acceptance criteria; a `resolved`/`test` row is a checkable negative the verifie
 over, a `resolved`/`judgment` row routes to judgment review. Resolved prohibitions are lifted
 into `must_haves.prohibitions` by plan-phase. `dismissed` rows carry a required non-empty
 reason. `⚠ UNRESOLVED` rows are flagged: planner must treat as assumption.]
+## Open Questions
+
+*(Optional — delete this whole section if none remain. Anything left here is unresolved and must NOT gate a locked requirement — move it to Requirements once decided.)*
+
+- [ ] [Question — e.g. "Do we need to support hedge mode?"]
+- [ ] [Question — e.g. "Is Redis acceptable as a new dependency?"]
 
 ## Ambiguity Report
 
@@ -186,6 +218,23 @@ The database has a `posts` table and `follows` table. No feed query or feed UI e
 - Feed query must use cursor-based pagination (not offset) — the database has 500K+ posts and offset pagination is unacceptably slow beyond page 3
 - The feed card component must reuse the existing `<AvatarImage>` component from Phase 2
 
+## Assumptions
+
+- The `follows` table from Phase 2 is populated and its schema is stable.
+- Posts already have a `created_at` timestamp column suitable for ordering.
+
+## Architecture Impact
+
+**Affected modules:**
+- `api.feed` — new module (feed query + `GET /api/feed` endpoint)
+- `ui.home` — replaces placeholder with the feed list component
+- `ui.components.PostCard` — new component, reuses `AvatarImage` from Phase 2
+
+## Required Reading
+
+- `docs/db-schema.md` — posts and follows table shapes
+- Phase 2 SUMMARY.md — how `AvatarImage` and the follows model were built
+
 ## Acceptance Criteria
 
 - [ ] `GET /api/feed` returns posts only from followed accounts (not all posts)
@@ -194,6 +243,10 @@ The database has a `posts` table and `follows` table. No feed query or feed UI e
 - [ ] Pull-to-refresh triggers refetch
 - [ ] New posts indicator appears when posts newer than current view exist
 - [ ] Empty state renders when user follows no one
+
+## Open Questions
+
+- [ ] Should the "new posts" banner poll on an interval, or only refresh on pull-to-refresh? (Leaning pull-only for this phase.)
 
 ## Ambiguity Report
 
@@ -324,6 +377,12 @@ No backup tooling exists. The project uses PostgreSQL. Developers currently use 
 **Boundaries protect the phase from scope creep.** The out-of-scope list with reasoning is as important as the in-scope list. Future phases that touch adjacent areas can point to this SPEC.md to understand what was intentionally excluded.
 
 **SPEC.md is a one-way door for requirements.** discuss-phase will treat these as locked. If requirements change after SPEC.md is written, the user should update SPEC.md first, then re-run discuss-phase.
+
+**Optional sections are additive, not gated.** Assumptions, Architecture Impact, Required Reading, and Open Questions are OPTIONAL — they do not affect the ambiguity score or the gate. Include a section only when it carries real content; delete the whole section (heading included) when it would be empty. They exist to help a fresh AI session or a new contributor pick up the phase without re-discovering context:
+- **Assumptions** — what is held true without re-checking; if one breaks, requirements may need revisiting.
+- **Architecture Impact** — which shared modules this phase touches, so reviewers know the blast radius.
+- **Required Reading** — the minimum docs/ADRs to read before working on the phase.
+- **Open Questions** — unresolved items. These must NEVER gate a locked requirement; once decided, promote them into Requirements.
 
 **SPEC.md does NOT replace CONTEXT.md.** They serve different purposes:
 - SPEC.md: what the phase delivers (requirements, boundaries, acceptance criteria)
